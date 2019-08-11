@@ -1,0 +1,3 @@
+- 详细：https://www.runoob.com/w3cnote/flex-grammar.html
+- 注意：注意，设为Flex布局以后，子元素的float、clear和vertical-align属性将失效
+- Flex是Flexible Box的缩写，意为”弹性布局”，用来为盒状模型提供最大的灵活性。任何一个容器都可以指定为Flex布局。
