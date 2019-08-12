@@ -126,6 +126,151 @@ func Count(s, sep []byte) int {
 //剩余情况就用Index函数搜索，并不断缩减s
 ```
 
+#### 8.Index(s, sep []byte) int
+> 子切片sep在s中第一次出现的位置，不存在则返回-1。
+```go
+func TestIndex(t *testing.T){
+	a := []byte{'1','2','3','2'}
+	b :=[]byte{'2','3'}
+	ret := bytes.Index(a,b)
+	t.Log(ret)
+}
+```
+- 该函数源码
+```go
+func Index(s, sep []byte) int {
+	n := len(sep)
+	switch {
+	case n == 0:
+		return 0
+	case n == 1:
+		return IndexByte(s, sep[0])
+	case n == len(s):
+		if Equal(sep, s) {
+			return 0
+		}
+		return -1
+	case n > len(s):
+		return -1
+	case n <= bytealg.MaxLen:
+		// Use brute force when s and sep both are small
+		if len(s) <= bytealg.MaxBruteForce {
+			return bytealg.Index(s, sep)
+		}
+		c0 := sep[0]
+		c1 := sep[1]
+		i := 0
+		t := len(s) - n + 1
+		fails := 0
+		for i < t {
+			if s[i] != c0 {
+				// IndexByte is faster than bytealg.Index, so use it as long as
+				// we're not getting lots of false positives.
+				o := IndexByte(s[i:t], c0)
+				if o < 0 {
+					return -1
+				}
+				i += o
+			}
+			if s[i+1] == c1 && Equal(s[i:i+n], sep) {
+				return i
+			}
+			fails++
+			i++
+			// Switch to bytealg.Index when IndexByte produces too many false positives.
+			if fails > bytealg.Cutover(i) {
+				r := bytealg.Index(s[i:], sep)
+				if r >= 0 {
+					return r + i
+				}
+				return -1
+			}
+		}
+		return -1
+	}
+	c0 := sep[0]
+	c1 := sep[1]
+	i := 0
+	fails := 0
+	t := len(s) - n + 1
+	for i < t {
+		if s[i] != c0 {
+			o := IndexByte(s[i:t], c0)
+			if o < 0 {
+				break
+			}
+			i += o
+		}
+		if s[i+1] == c1 && Equal(s[i:i+n], sep) {
+			return i
+		}
+		i++
+		fails++
+		if fails >= 4+i>>4 && i < t {
+			// Give up on IndexByte, it isn't skipping ahead
+			// far enough to be better than Rabin-Karp.
+			// Experiments (using IndexPeriodic) suggest
+			// the cutover is about 16 byte skips.
+			// TODO: if large prefixes of sep are matching
+			// we should cutover at even larger average skips,
+			// because Equal becomes that much more expensive.
+			// This code does not take that effect into account.
+			j := indexRabinKarp(s[i:], sep)
+			if j < 0 {
+				return -1
+			}
+			return i + j
+		}
+	}
+	return -1
+}
+```
+
+#### 9.IndexByte(s []byte, c byte) int
+> 字符c在s中第一次出现的位置，不存在则返回-1。
+```go
+func TestIndexByte(t *testing.T){
+	a := []byte{'1','2','3','2'}
+	b := byte('2')
+	ret := bytes.IndexByte(a,b)
+	t.Log(ret)
+}
+```
+#### 10.IndexRune(s []byte, r rune) int
+> unicode字符r的utf-8编码在s中第一次出现的位置，不存在则返回-1
+```go
+func TestIndexRune(t *testing.T){
+	a := []byte{'1','2','3','2'}
+	b := '2'
+	ret := bytes.IndexRune(a,b)
+	t.Log(ret)
+}
+```
+
+#### 11.IndexFunc(s []byte, f func(r rune) bool) int
+>s中第一个满足函数f的位置i（该处的utf-8码值r满足f(r)==true），不存在则返回-1
+>
+
+#### 12. LastIndex(s, sep []byte) int
+>切片sep在字符串s中最后一次出现的位置，不存在则返回-1
+>
+
+
+#### ToLower(s []byte) []byte
+> 返回将所有字母都转为对应的小写版本的拷贝
+```go
+func TestToLower(t *testing.T){
+	a := []byte{'a','B','C','E'}
+	b :=bytes.ToLower(a)
+	for _,v :=range b{
+		t.Log(string(v))
+	}
+}  
+//a,b,c,e
+```
+
+
+
 
 
 
