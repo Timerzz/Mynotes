@@ -256,7 +256,7 @@ func TestIndexRune(t *testing.T){
 >
 
 
-#### ToLower(s []byte) []byte
+#### 13.ToLower(s []byte) []byte
 > 返回将所有字母都转为对应的小写版本的拷贝
 ```go
 func TestToLower(t *testing.T){
@@ -268,7 +268,16 @@ func TestToLower(t *testing.T){
 }  
 //a,b,c,e
 ```
-
+#### 14.Split(s, sep []byte) [][]byte
+> 用去掉s中出现的sep的方式进行分割，会分割到结尾，并返回生成的所有[]byte切片组成的切片
+```go
+func TestSlipt(t *testing.T){
+	a := []byte{'a','b','a','d'}
+	b :=[]byte{'a'}
+	ret := bytes.Split(a,b)
+	t.Log(ret)
+}  //返回值：[[] [98] [100]]
+```
 
 
 
