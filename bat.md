@@ -8,3 +8,5 @@
 > if exist "Updater.exe" (echo ok ) else (echo err)
 5. 根据进程名杀进程
 > taskkill /im name
+6. 查看开机时间
+> net statistics WORKSTATION
