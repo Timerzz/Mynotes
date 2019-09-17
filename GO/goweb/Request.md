@@ -22,7 +22,7 @@ func main(){
 	http.HandleFunc("/header", handle)
 	if err:=http.ListenAndServe("127.0.0.1:8080",nil);err!=nil{
 		fmt.Println(err)
-	}
+ }
 }
 ```
 通过以下方法可以获得特定的首部
