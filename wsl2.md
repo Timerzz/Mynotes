@@ -1,0 +1,2 @@
+**netsh winsock reset**
+

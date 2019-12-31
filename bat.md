@@ -10,3 +10,5 @@
 > taskkill /im name
 6. 查看开机时间
 > net statistics WORKSTATION
+7. 手动打cab补丁
+> dism /online /add-package /packagepath:补丁路径。
